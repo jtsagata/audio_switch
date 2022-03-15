@@ -1,0 +1,124 @@
+#!/bin/bash
+# Save as /usr/local/bin/audio_switch and make it executable
+# Info: https://pipewire-debian.github.io/pipewire-debian/
+
+RESET='\e[0m'
+RED='\e[31m'
+GREEN='\e[32m'
+OK="${GREEN}[OK]${RESET}"
+ERROR="${RED}[ERROR]${RESET}"
+
+
+function cmd_repos() {
+    # For PipeWire
+    sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream -y
+    # For WirePlumber 
+    sudo add-apt-repository ppa:pipewire-debian/wireplumber-upstream
+}
+
+function cmd_install() {
+    sudo apt-get update
+    sudo apt install expect -y
+    sudo apt install pipewire gstreamer1.0-pipewire pipewire-pulse libspa-0.2-bluetooth libspa-0.2-jack pipewire-media-session -y
+    sudo cp -vRa /usr/share/pipewire /etc/ 
+}
+
+function enable_service() {
+    service="$1"
+    systemctl --user --quiet --now enable "${service}"
+    state=$(systemctl show --user -p SubState "$service" | sed 's/SubState=//g')
+    code="${ERROR}" && systemctl is-active --user --quiet "${service}" && code="${OK}"
+    echo -e "    ${code} Service ${service} is ${state}"
+}
+
+function disable_service() {
+    service="$1"
+    systemctl --user --quiet --now disable "${service}" 
+    state=$(systemctl show --user -p SubState "$service" | sed 's/SubState=//g')
+    code="${ERROR}" && systemctl is-active --user --quiet "${service}" || code="${OK}"
+    echo -e "    ${code} Service ${service} is ${state}"
+}
+
+function cmd_pulseaudio() {
+    what="${1-on}"; shift
+    case "$what" in
+    "on")
+        cmd_pipewire off
+        echo "-- Enable PulseAudio"
+        systemctl --quiet --user unmask pulseaudio
+        enable_service pulseaudio.socket
+        enable_service pulseaudio.service
+        systemctl --user daemon-reload
+        cmd_check
+        ;;
+    *)
+        echo "-- Disable PulseAudio"
+        disable_service pulseaudio.socket
+        disable_service pulseaudio.service
+        systemctl --quiet --user mask pulseaudio
+        systemctl --user daemon-reload
+        ;;
+    esac
+    shift
+}
+
+function cmd_pipewire() {
+    what="${1-on}"; shift
+    case "$what" in
+    "on")
+        echo "-- Enable pipewire"
+        cmd_pulseaudio off
+        enable_service pipewire.socket
+        enable_service pipewire.service
+        enable_service pipewire-pulse.socket
+        enable_service pipewire-pulse.service
+        enable_service wireplumber.service
+        systemctl --user daemon-reload
+        cmd_check
+        ;;
+    *)
+        echo "-- Disable pipewire"
+        disable_service wireplumber.service
+        disable_service pipewire-pulse.socket
+        disable_service pipewire-pulse.service
+        disable_service pipewire.service
+        disable_service pipewire.socket
+        systemctl --user daemon-reload
+        ;;
+    esac
+}
+
+function cmd_check() {    
+    pactl info | grep '^Server Name'
+    aplay /usr/share/sounds/linuxmint-gdm.wav
+}
+
+function cmd_help() {
+    echo "$(basename "${BASH_SOURCE[0]}"): Install pipewire and sound switcher source"
+    echo "   repos:       Enable PPAs"
+    echo "   install:     Install pipewire"
+    echo "   pipewire:    Use pipewire"
+    echo "   pulseaudio:  Use puleaudio"
+    echo "   check:       Check sound"
+    echo "   services:    Show services status"
+}
+
+function cmd_services() {
+    echo -e "${GREEN}●${RESET} Sockets:"
+    unbuffer systemctl --user list-sockets --no-pager  $1  "*wire*" "*pulse*" |  sed -e '/^$/,$d'
+    echo 
+    echo -e "${GREEN}●${RESET} Services:"
+    unbuffer systemctl --user list-units --no-pager --type=service  "$1"  "*wire*" "*pulse*" |  sed -e '/^$/,$d'
+}
+
+### Run the command
+command=${1-help}
+shift
+func=cmd_"${command}"
+if [ "$(type -t "$func")" == "function" ]; then
+	$func "$@"
+else
+	printf "Unknown command %s\n" "$command"
+	cmd_help
+fi
+
