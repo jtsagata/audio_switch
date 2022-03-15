@@ -4,7 +4,8 @@ With this tool you can install PipeWire on Debian based systems. It also provide
 
 ## Switching to PipeWire
 
-<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font <pre>-- Disable PulseAudio
+<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font <pre>
+-- Disable PulseAudio
     <font color="#4E9A06">[OK]</font> Service pulseaudio.socket is dead
     <font color="#4E9A06">[OK]</font> Service pulseaudio.service is dead
 -- Enable pipewire
@@ -13,6 +14,7 @@ With this tool you can install PipeWire on Debian based systems. It also provide
     <font color="#4E9A06">[OK]</font> Service pipewire-pulse.socket is listening
     <font color="#4E9A06">[OK]</font> Service pipewire-pulse.service is running
     <font color="#4E9A06">[OK]</font> Service wireplumber.service is running
+-- Testing    
 Server Name: PulseAudio (on PipeWire 0.3.48)
 Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Little Endian, Rate 22050 Hz, Mono
 </pre>
@@ -28,6 +30,7 @@ Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Lit
 -- Enable PulseAudio
     <font color="#4E9A06">[OK]</font> Service pulseaudio.socket is listening
     <font color="#4E9A06">[OK]</font> Service pulseaudio.service is running
+-- Testing
 Server Name: pulseaudio
 Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Little Endian, Rate 22050 Hz, Mon</pre>
 

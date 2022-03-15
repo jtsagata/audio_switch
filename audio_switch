@@ -49,6 +49,7 @@ function cmd_pulseaudio() {
         enable_service pulseaudio.socket
         enable_service pulseaudio.service
         systemctl --user daemon-reload
+        echo "-- Testing"
         cmd_check
         ;;
     *)
@@ -74,6 +75,7 @@ function cmd_pipewire() {
         enable_service pipewire-pulse.service
         enable_service wireplumber.service
         systemctl --user daemon-reload
+        echo "-- Testing"
         cmd_check
         ;;
     *)
