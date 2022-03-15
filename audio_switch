@@ -91,8 +91,14 @@ function cmd_pipewire() {
 }
 
 function cmd_check() {    
-    pactl info | grep '^Server Name'
-    aplay /usr/share/sounds/linuxmint-gdm.wav
+    server=$(pactl info | grep '^Server Name')
+    if [[ "$server" =~ "PipeWire" ]]; then 
+        echo -ne "*** Running on ${GREEN}Pipewire${RESET}... "
+    else 
+        echo -ne "*** Running on ${GREEN}PulseAudio${RESET}..."
+    fi
+    aplay /usr/share/sounds/linuxmint-gdm.wav 2> /dev/null
+    echo "Did you hear the sound?"
 }
 
 function cmd_help() {
