@@ -60,7 +60,7 @@ Run the command
 `wget -O - https://raw.githubusercontent.com/jtsagata/audio_switch/master/install.sh | sudo bash`
 and follow instructions. It won't change anything on your system if you don't. 
 
-## Trubleshooting and more Info
+## Troubleshooting and more Info
 
 * https://pipewire-debian.github.io/pipewire-debian/
 * https://linux-user.gr/t/eykolh-enallagh-metaxy-pulseaudio-kai-pipewire/3959 (Greek)
