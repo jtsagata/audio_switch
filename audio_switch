@@ -66,8 +66,8 @@ function cmd_pipewire() {
     what="${1-on}"; shift
     case "$what" in
     "on")
-        echo "-- Enable pipewire"
         cmd_pulseaudio off
+        echo "-- Enable pipewire"
         enable_service pipewire.socket
         enable_service pipewire.service
         enable_service pipewire-pulse.socket
