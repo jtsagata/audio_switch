@@ -1,4 +1,5 @@
-# audio-switch: Install PipeWire and easy switch between PipeWire and PluseAudio 
+# audio-switch:
+## Install PipeWire and easy switch between PipeWire and PluseAudio 
 
 With this tool you can install PipeWire on Debian based systems. It also provides an easy way to switch between PulseAudio and Pipewire and debug the installation.
 
