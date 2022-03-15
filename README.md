@@ -4,7 +4,7 @@ With this tool you can install PipeWire on Debian based systems. It also provide
 
 ## Switching to PipeWire
 
-<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font <pre>
+<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font color="#729FCF"><b>~</b></font>$ audio_switch pipewire
 -- Disable PulseAudio
     <font color="#4E9A06">[OK]</font> Service pulseaudio.socket is dead
     <font color="#4E9A06">[OK]</font> Service pulseaudio.service is dead
