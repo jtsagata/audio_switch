@@ -19,7 +19,8 @@ function cmd_repos() {
 function cmd_install() {
     sudo apt-get update
     sudo apt install expect -y
-    sudo apt install pipewire gstreamer1.0-pipewire pipewire-pulse libspa-0.2-bluetooth libspa-0.2-jack pipewire-media-session -y
+    sudo apt install -y pipewire gstreamer1.0-pipewire pipewire-pulse libspa-0.2-bluetooth libspa-0.2-jack pipewire-media-session
+    sudo apt install -y gir1.2-wp-0.4 wireplumber wireplumber-doc
     sudo cp -vRa /usr/share/pipewire /etc/ 
 }
 
@@ -97,7 +98,7 @@ function cmd_check() {
     else 
         echo -ne "*** Running on ${GREEN}PulseAudio${RESET}..."
     fi
-    aplay /usr/share/sounds/linuxmint-gdm.wav 2> /dev/null
+    aplay /usr/share/sounds/alsa/Front_Center.wav 2> /dev/null
     echo "Did you hear the sound?"
 }
 
