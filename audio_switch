@@ -29,6 +29,19 @@ function cmd_install() {
     fi
 }
 
+# https://blog.robertelder.org/bash-one-liner-compose-music/
+function cmd_music() {
+    local player
+    if [[ "$1" == "sad" ]]; then
+        player="pacat"
+    else
+        player="aplay -c 2 -f S32_LE -r 16000"
+    fi
+    head -c 4 /dev/urandom | hexdump -v -e '/1 "%u\n"' | \
+    awk '{ split("0,2,3,5,7,8,10,12",a,","); for (i = 0; i < 1; i+= 0.0001) printf("%08X\n", 100*sin(1382*exp((a[$1%8+1]/12)*log(2))*i)) }' | \
+    xxd -r -p | $player 2> /dev/null
+}
+
 function enable_service() {
     local service
     local code
@@ -48,6 +61,16 @@ function enable_service() {
             enable_service "$service" retry
         fi
     fi
+}
+
+function restart_service() {
+    local service
+    local code
+    service="$1"
+    systemctl --user --quiet restart "${service}"
+    state=$(systemctl show --user -p SubState "$service" | sed 's/SubState=//g')
+    code="${ERROR}" && systemctl is-active --user --quiet "${service}" && code="${OK}"
+    echo -e "    ${code} Service ${service} is ${state}"
 }
 
 function disable_service() {
@@ -95,7 +118,7 @@ function cmd_pulseaudio() {
         ;;
     "restart")
         echo "-- Restarting PulseAudio"
-        systemctl --user restart pulseuadio
+        restart_service pulseuadio
         echo "-- Service and sockets status"
         cmd_services
         echo
@@ -124,8 +147,8 @@ function cmd_pipewire() {
         ;;
     "restart")
         echo "-- Restarting Pipewire"
-        systemctl --user restart pipewire
-        systemctl --user restart wireplumber
+        restart_service pipewire
+        restart_service wireplumber
         echo "-- Service and sockets status"
         cmd_services
         echo
@@ -151,6 +174,7 @@ function cmd_check() {
     fi
     aplay /usr/share/sounds/alsa/Front_Center.wav 2>/dev/null
     echo "Did you hear the sound?"
+    echo "Now check sound properties and set the output device and channels"
 }
 
 function cmd_restart() {
@@ -170,6 +194,7 @@ function cmd_help() {
     echo "   pulseaudio:  Use PuleAudio"
     echo "   restart:     Restart audio service"
     echo "   check:       Check sound"
+    echo "   music:       Play some music"
     echo "   services:    Show services status"
 }
 
