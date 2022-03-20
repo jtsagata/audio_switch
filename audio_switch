@@ -102,6 +102,8 @@ function reload_and_check() {
     echo -e "-- Testing ${GREEN}$server${RESET}"
     aplay "${SOUND_FILE}" 2>/dev/null
     echo "Did you hear the sound?"
+    echo "-- Sink and volume info"
+    cmd_vinfo
 }
 
 function cmd_pulseaudio() {
@@ -174,7 +176,6 @@ function cmd_check() {
     fi
     aplay /usr/share/sounds/alsa/Front_Center.wav 2>/dev/null
     echo "Did you hear the sound?"
-    echo "Now check sound properties and set the output device and channels"
 }
 
 function cmd_restart() {
@@ -195,6 +196,7 @@ function cmd_help() {
     echo "   restart:     Restart audio service"
     echo "   check:       Check sound"
     echo "   music:       Play some music"
+    echo "   vinfo:       Show sink and volume info"
     echo "   services:    Show services status"
 }
 
@@ -205,6 +207,20 @@ function cmd_services() {
     echo
     echo -e "${GREEN}●${RESET} Services:"
     unbuffer systemctl --user list-units --no-pager --type=service "$1" "*wire*" "*pulse*" | sed -e '/^$/,$d'
+}
+
+function cmd_vinfo() {
+    local vol
+    local sink=$(pactl get-default-sink)
+    printf  "%s Default Sink: ${GREEN}%s${RESET}\n" "--" "$(pactl get-default-sink | rev | cut -d'.' -f 1 | rev)"
+    local volumes=$(pactl get-sink-volume @DEFAULT_SINK@ | sed -e 's/^Volume: //g')
+    echo "-- Volumes"
+    # Show volumes one line each
+    IFS=',' read -ra vol <<< "$volumes"
+    for i in "${vol[@]}"; do
+       local trim=$(echo "$i" | xargs)
+       printf "${GREEN}%16s${RESET}:%s\n" "$(echo "$trim" | cut -d: -f1)" "$(echo "$trim" | cut -d: -f2 | cut -d/ -f2)"
+    done
 }
 
 ### Run the command
