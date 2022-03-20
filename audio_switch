@@ -120,7 +120,7 @@ function cmd_pulseaudio() {
         ;;
     "restart")
         echo "-- Restarting PulseAudio"
-        restart_service pulseuadio
+        restart_service pulseaudio
         echo "-- Service and sockets status"
         cmd_services
         echo

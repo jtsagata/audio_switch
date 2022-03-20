@@ -1,39 +1,56 @@
 # audio-switch:
-## Install PipeWire and easy switch between PipeWire and PluseAudio 
+## Install PipeWire and easy switch between PipeWire and PulseAudio 
 
 With this tool you can install PipeWire on Debian based systems. It also provides an easy way to switch between PulseAudio and Pipewire and debug the installation.
 
 ## Switching to PipeWire
 
-<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font color="#729FCF"><b>~</b></font>$ audio_switch pipewire
+<pre><font color="#90A959"><b> </b></font><font color="#6A9FB5"> </font> <font color="#90A959"><b>❯</b></font> audio_switch pipewire
 -- Disable PulseAudio
-    <font color="#4E9A06">[OK]</font> Service pulseaudio.socket is dead
-    <font color="#4E9A06">[OK]</font> Service pulseaudio.service is dead
--- Enable pipewire
-    <font color="#4E9A06">[OK]</font> Service pipewire.socket is listening
-    <font color="#4E9A06">[OK]</font> Service pipewire.service is running
-    <font color="#4E9A06">[OK]</font> Service pipewire-pulse.socket is listening
-    <font color="#4E9A06">[OK]</font> Service pipewire-pulse.service is running
-    <font color="#4E9A06">[OK]</font> Service wireplumber.service is running
--- Testing    
-Server Name: PulseAudio (on PipeWire 0.3.48)
-Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Little Endian, Rate 22050 Hz, Mono
+    <font color="#90A959">[OK]</font> Service pulseaudio.socket is dead
+    <font color="#90A959">[OK]</font> Service pulseaudio.service is dead
+-- Enable Pipewire
+    <font color="#90A959">[OK]</font> Service pipewire.socket is running
+    <font color="#90A959">[OK]</font> Service pipewire.service is running
+    <font color="#90A959">[OK]</font> Service pipewire-pulse.socket is running
+    <font color="#90A959">[OK]</font> Service pipewire-pulse.service is running
+    <font color="#90A959">[OK]</font> Service wireplumber.service is running
+-- Testing <font color="#90A959">Server Name: PulseAudio (on PipeWire 0.3.48)</font>
+Did you hear the sound?
+-- Sink and volume info
+-- Default Sink: <font color="#90A959">analog-surround-51</font>
+-- Volumes
+<font color="#90A959">      front-left</font>: 56% 
+<font color="#90A959">     front-right</font>: 56% 
+<font color="#90A959">       rear-left</font>: 56% 
+<font color="#90A959">      rear-right</font>: 56% 
+<font color="#90A959">    front-center</font>: 56% 
+<font color="#90A959">             lfe</font>: 56% 
 </pre>
 
 ## Switching to PulseAudio
-<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font color="#729FCF"><b>~</b></font>$ audio_switch pulseaudio
--- Disable pipewire
-    <font color="#4E9A06">[OK]</font> Service wireplumber.service is dead
-    <font color="#4E9A06">[OK]</font> Service pipewire-pulse.socket is dead
-    <font color="#4E9A06">[OK]</font> Service pipewire-pulse.service is dead
-    <font color="#4E9A06">[OK]</font> Service pipewire.service is dead
-    <font color="#4E9A06">[OK]</font> Service pipewire.socket is dead
+<pre><font color="#90A959"><b> </b></font><font color="#6A9FB5"> </font> <font color="#90A959"><b>❯</b></font> audio_switch pulseaudio
+-- Disable Pipewire
+    <font color="#90A959">[OK]</font> Service pipewire-pulse.socket is dead
+    <font color="#90A959">[OK]</font> Service pipewire.socket is dead
+    <font color="#90A959">[OK]</font> Service wireplumber.service is dead
+    <font color="#90A959">[OK]</font> Service pipewire-pulse.service is dead
+    <font color="#90A959">[OK]</font> Service pipewire.service is dead
 -- Enable PulseAudio
-    <font color="#4E9A06">[OK]</font> Service pulseaudio.socket is listening
-    <font color="#4E9A06">[OK]</font> Service pulseaudio.service is running
--- Testing
-Server Name: pulseaudio
-Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Little Endian, Rate 22050 Hz, Mon</pre>
+    <font color="#90A959">[OK]</font> Service pulseaudio.socket is listening
+    <font color="#90A959">[OK]</font> Service pulseaudio.service is running
+-- Testing <font color="#90A959">Server Name: pulseaudio</font>
+Did you hear the sound?
+-- Sink and volume info
+-- Default Sink: <font color="#90A959">analog-surround-51</font>
+-- Volumes
+<font color="#90A959">      front-left</font>: 56% 
+<font color="#90A959">     front-right</font>: 56% 
+<font color="#90A959">       rear-left</font>: 56% 
+<font color="#90A959">      rear-right</font>: 56% 
+<font color="#90A959">    front-center</font>: 56% 
+<font color="#90A959">             lfe</font>: 56% 
+</pre>
 
 ## Check service status
 <pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font color="#729FCF"><b>~</b></font>$ audio_switch services --all
@@ -57,7 +74,30 @@ Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Lit
 Server Name: PulseAudio (on PipeWire 0.3.48)
 Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Little Endian, Rate 22050 Hz, Mono</pre>
 
+## Show default sink and volume info
+<pre><font color="#90A959"><b> </b></font><font color="#6A9FB5"> </font> <font color="#90A959"><b>❯</b></font> audio_switch vinfo
+-- Default Sink: <font color="#90A959">analog-surround-51</font>
+-- Volumes
+<font color="#90A959">      front-left</font>: 56% 
+<font color="#90A959">     front-right</font>: 56% 
+<font color="#90A959">       rear-left</font>: 56% 
+<font color="#90A959">      rear-right</font>: 56% 
+<font color="#90A959">    front-center</font>: 56% 
+<font color="#90A959">             lfe</font>: 56% </pre>
+
+## Other options
 Type `audio_switch` without parameters for other options
+<pre>audio_switch: Install pipewire and sound switcher source
+   repos:       Enable PPAs
+   install:     Install Pipewire
+   pipewire:    Use Pipewire
+   pulseaudio:  Use PuleAudio
+   restart:     Restart audio service
+   check:       Check sound
+   music:       Play some music
+   vinfo:       Show sink and volume info
+   services:    Show services status
+</pre>
 
 ## Installation
 Run the command 
