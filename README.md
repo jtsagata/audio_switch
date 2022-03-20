@@ -5,7 +5,7 @@ With this tool you can install PipeWire on Debian based systems. It also provide
 
 ## Switching to PipeWire
 
-<pre><font color="#90A959"><b> </b></font><font color="#6A9FB5"> </font> <font color="#90A959"><b>❯</b></font> audio_switch pipewire
+<pre>$ audio_switch pipewire
 -- Disable PulseAudio
     <font color="#90A959">[OK]</font> Service pulseaudio.socket is dead
     <font color="#90A959">[OK]</font> Service pulseaudio.service is dead
@@ -29,7 +29,7 @@ Did you hear the sound?
 </pre>
 
 ## Switching to PulseAudio
-<pre><font color="#90A959"><b> </b></font><font color="#6A9FB5"> </font> <font color="#90A959"><b>❯</b></font> audio_switch pulseaudio
+<pre>$ audio_switch pulseaudio
 -- Disable Pipewire
     <font color="#90A959">[OK]</font> Service pipewire-pulse.socket is dead
     <font color="#90A959">[OK]</font> Service pipewire.socket is dead
@@ -53,7 +53,7 @@ Did you hear the sound?
 </pre>
 
 ## Check service status
-<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font color="#729FCF"><b>~</b></font>$ audio_switch services --all
+<pre>$ audio_switch services --all
 <font color="#4E9A06">●</font> Sockets:
 <u style="text-decoration-style:single">LISTEN                      UNITS                 ACTIVATES             </u>
 /run/user/1000/pipewire-0   pipewire.socket       pipewire.service      
@@ -70,12 +70,12 @@ Did you hear the sound?
 </pre>
 
 ## Quick check if everything working and view the sound daemon used
-<pre><font color="#8AE234"><b>asfodelus@menta</b></font>:<font color="#729FCF"><b>~</b></font>$ audio_switch check
-Server Name: PulseAudio (on PipeWire 0.3.48)
-Playing WAVE &apos;/usr/share/sounds/linuxmint-gdm.wav&apos; : Signed 16 bit Little Endian, Rate 22050 Hz, Mono</pre>
+<pre>$ audio_switch check
+*** Running on <font color="#90A959">PulseAudio</font>...Did you hear the sound?
+</pre>
 
 ## Show default sink and volume info
-<pre><font color="#90A959"><b> </b></font><font color="#6A9FB5"> </font> <font color="#90A959"><b>❯</b></font> audio_switch vinfo
+<pre>$ audio_switch vinfo
 -- Default Sink: <font color="#90A959">analog-surround-51</font>
 -- Volumes
 <font color="#90A959">      front-left</font>: 56% 
