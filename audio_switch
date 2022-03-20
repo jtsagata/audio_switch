@@ -24,7 +24,9 @@ function cmd_install() {
 	sudo apt install expect -y
 	sudo apt install -y pipewire gstreamer1.0-pipewire pipewire-pulse libspa-0.2-bluetooth libspa-0.2-jack pipewire-media-session
 	sudo apt install -y gir1.2-wp-0.4 wireplumber wireplumber-doc
-	sudo cp -vRa /usr/share/pipewire /etc/
+	if [[ ! -d /etc/pipewire/ ]]; then
+	  sudo cp -vRa /usr/share/pipewire /etc/
+	fi
 }
 
 function enable_service() {
