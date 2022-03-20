@@ -13,173 +13,173 @@ ERROR="${RED}[ERROR]${RESET}"
 SOUND_FILE=/usr/share/sounds/alsa/Front_Center.wav
 
 function cmd_repos() {
-	# For PipeWire
-	sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream -y
-	# For WirePlumber
-	sudo add-apt-repository ppa:pipewire-debian/wireplumber-upstream
+    # For PipeWire
+    sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream -y
+    # For WirePlumber
+    sudo add-apt-repository ppa:pipewire-debian/wireplumber-upstream
 }
 
 function cmd_install() {
-	sudo apt-get update
-	sudo apt install expect -y
-	sudo apt install -y pipewire gstreamer1.0-pipewire pipewire-pulse libspa-0.2-bluetooth libspa-0.2-jack pipewire-media-session
-	sudo apt install -y gir1.2-wp-0.4 wireplumber wireplumber-doc
-	if [[ ! -d /etc/pipewire/ ]]; then
-	  sudo cp -vRa /usr/share/pipewire /etc/
-	fi
+    sudo apt-get update
+    sudo apt install expect -y
+    sudo apt install -y pipewire gstreamer1.0-pipewire pipewire-pulse libspa-0.2-bluetooth libspa-0.2-jack pipewire-media-session
+    sudo apt install -y gir1.2-wp-0.4 wireplumber wireplumber-doc
+    if [[ ! -d /etc/pipewire/ ]]; then
+        sudo cp -vRa /usr/share/pipewire /etc/
+    fi
 }
 
 function enable_service() {
-	local service
-	local code
-	local retry
-	service="$1"
-	systemctl --user --quiet --now enable "${service}"
-	state=$(systemctl show --user -p SubState "$service" | sed 's/SubState=//g')
-	code="${ERROR}" && systemctl is-active --user --quiet "${service}" && code="${OK}"
-	echo -e "    ${code} Service ${service} is ${state}"
-	if [[ "$code" == "${ERROR}" ]]; then
-	  if [[ "$retry" == "retry" ]]; then
-	    echo "============================================="
-		  systemctl --user --no-pager status "${service}"
-		  echo "============================================="
-		else
-			sleep 2
-			enable_service "$service" retry
-		fi
-	fi
+    local service
+    local code
+    local retry
+    service="$1"
+    systemctl --user --quiet --now enable "${service}"
+    state=$(systemctl show --user -p SubState "$service" | sed 's/SubState=//g')
+    code="${ERROR}" && systemctl is-active --user --quiet "${service}" && code="${OK}"
+    echo -e "    ${code} Service ${service} is ${state}"
+    if [[ "$code" == "${ERROR}" ]]; then
+        if [[ "$retry" == "retry" ]]; then
+            echo "============================================="
+            systemctl --user --no-pager status "${service}"
+            echo "============================================="
+        else
+            sleep 2
+            enable_service "$service" retry
+        fi
+    fi
 }
 
 function disable_service() {
-	local service
-	local code
-	local retry
-	service="$1"
-	retry="$2"
-	systemctl --user --quiet --now disable "${service}"
-	state=$(systemctl show --user -p SubState "$service" | sed 's/SubState=//g')
-	code="${ERROR}" && systemctl is-active --user --quiet "${service}" || code="${OK}"
-	echo -e "    ${code} Service ${service} is ${state}"
-	if [[ "$code" == "${ERROR}" ]]; then
-	  if [[ "$retry" == "retry" ]]; then
-	    echo "============================================="
-		  systemctl --user --no-pager status "${service}"
-		  echo "============================================="
-		else
-			sleep 2
-			disable_service "$service" retry
-		fi
-	fi
+    local service
+    local code
+    local retry
+    service="$1"
+    retry="$2"
+    systemctl --user --quiet --now disable "${service}"
+    state=$(systemctl show --user -p SubState "$service" | sed 's/SubState=//g')
+    code="${ERROR}" && systemctl is-active --user --quiet "${service}" || code="${OK}"
+    echo -e "    ${code} Service ${service} is ${state}"
+    if [[ "$code" == "${ERROR}" ]]; then
+        if [[ "$retry" == "retry" ]]; then
+            echo "============================================="
+            systemctl --user --no-pager status "${service}"
+            echo "============================================="
+        else
+            sleep 2
+            disable_service "$service" retry
+        fi
+    fi
 }
 
 function reload_and_check() {
-  local server
-	systemctl --user daemon-reload
-	server=$(pactl info | grep '^Server Name')
-	echo -e "-- Testing ${GREEN}$server${RESET}"
-	aplay "${SOUND_FILE}" 2>/dev/null
-	echo "Did you hear the sound?"
+    local server
+    systemctl --user daemon-reload
+    server=$(pactl info | grep '^Server Name')
+    echo -e "-- Testing ${GREEN}$server${RESET}"
+    aplay "${SOUND_FILE}" 2>/dev/null
+    echo "Did you hear the sound?"
 }
 
 function cmd_pulseaudio() {
-	local what
-	what="${1-on}"
-	shift || true
-	case "$what" in
-	"on")
-		cmd_pipewire off
-		echo "-- Enable PulseAudio"
-		systemctl --quiet --user unmask pulseaudio
-		enable_service pulseaudio.socket
-		enable_service pulseaudio.service
-		;;
-	"restart")
-	  echo "-- Restarting PulseAudio"
-		systemctl --user restart pulseuadio
-		echo "-- Service and sockets status"
-		cmd_services
-		echo
-		;;
-	"off")
-		echo "-- Disable PulseAudio"
-		disable_service pulseaudio.socket
-		disable_service pulseaudio.service
-		systemctl --quiet --user mask pulseaudio
-		;;
-	esac
-	if [[ "$what" != "off" ]]; then reload_and_check; fi
+    local what
+    what="${1-on}"
+    shift || true
+    case "$what" in
+    "on")
+        cmd_pipewire off
+        echo "-- Enable PulseAudio"
+        systemctl --quiet --user unmask pulseaudio
+        enable_service pulseaudio.socket
+        enable_service pulseaudio.service
+        ;;
+    "restart")
+        echo "-- Restarting PulseAudio"
+        systemctl --user restart pulseuadio
+        echo "-- Service and sockets status"
+        cmd_services
+        echo
+        ;;
+    "off")
+        echo "-- Disable PulseAudio"
+        disable_service pulseaudio.socket
+        disable_service pulseaudio.service
+        systemctl --quiet --user mask pulseaudio
+        ;;
+    esac
+    if [[ "$what" != "off" ]]; then reload_and_check; fi
 }
 
 function cmd_pipewire() {
-	local what="${1-on}"
-	case "$what" in
-	"on")
-		cmd_pulseaudio off
-		echo "-- Enable Pipewire"
-		enable_service pipewire.socket
-		enable_service pipewire.service
-		enable_service pipewire-pulse.socket
-		enable_service pipewire-pulse.service
-		enable_service wireplumber.service
-		;;
-	"restart")
-	  echo "-- Restarting Pipewire"
-		systemctl --user restart pipewire
-		systemctl --user restart wireplumber
-		echo "-- Service and sockets status"
-		cmd_services
-		echo
-		;;
-	"off")
-		echo "-- Disable Pipewire"
-		disable_service pipewire-pulse.socket
-		disable_service pipewire.socket
-		disable_service wireplumber.service
-		disable_service pipewire-pulse.service
-		disable_service pipewire.service
-		;;
-	esac
-	if [[ "$what" != "off" ]]; then reload_and_check; fi
+    local what="${1-on}"
+    case "$what" in
+    "on")
+        cmd_pulseaudio off
+        echo "-- Enable Pipewire"
+        enable_service pipewire.socket
+        enable_service pipewire.service
+        enable_service pipewire-pulse.socket
+        enable_service pipewire-pulse.service
+        enable_service wireplumber.service
+        ;;
+    "restart")
+        echo "-- Restarting Pipewire"
+        systemctl --user restart pipewire
+        systemctl --user restart wireplumber
+        echo "-- Service and sockets status"
+        cmd_services
+        echo
+        ;;
+    "off")
+        echo "-- Disable Pipewire"
+        disable_service pipewire-pulse.socket
+        disable_service pipewire.socket
+        disable_service wireplumber.service
+        disable_service pipewire-pulse.service
+        disable_service pipewire.service
+        ;;
+    esac
+    if [[ "$what" != "off" ]]; then reload_and_check; fi
 }
 
 function cmd_check() {
-	server=$(pactl info | grep '^Server Name')
-	if [[ "$server" =~ "PipeWire" ]]; then
-		echo -ne "*** Running on ${GREEN}Pipewire${RESET}... "
-	else
-		echo -ne "*** Running on ${GREEN}PulseAudio${RESET}..."
-	fi
-	aplay /usr/share/sounds/alsa/Front_Center.wav 2>/dev/null
-	echo "Did you hear the sound?"
+    server=$(pactl info | grep '^Server Name')
+    if [[ "$server" =~ "PipeWire" ]]; then
+        echo -ne "*** Running on ${GREEN}Pipewire${RESET}... "
+    else
+        echo -ne "*** Running on ${GREEN}PulseAudio${RESET}..."
+    fi
+    aplay /usr/share/sounds/alsa/Front_Center.wav 2>/dev/null
+    echo "Did you hear the sound?"
 }
 
 function cmd_restart() {
-	server=$(pactl info | grep '^Server Name')
-	if [[ "$server" =~ "PipeWire" ]]; then
-		cmd_pipewire restart
-	else
-		cmd_pulseaudio restart
-	fi
+    server=$(pactl info | grep '^Server Name')
+    if [[ "$server" =~ "PipeWire" ]]; then
+        cmd_pipewire restart
+    else
+        cmd_pulseaudio restart
+    fi
 }
 
 function cmd_help() {
-	echo "$(basename "${BASH_SOURCE[0]}"): Install pipewire and sound switcher source"
-	echo "   repos:       Enable PPAs"
-	echo "   install:     Install Pipewire"
-	echo "   pipewire:    Use Pipewire"
-	echo "   pulseaudio:  Use PuleAudio"
-	echo "   restart:     Restart audio service"
-	echo "   check:       Check sound"
-	echo "   services:    Show services status"
+    echo "$(basename "${BASH_SOURCE[0]}"): Install pipewire and sound switcher source"
+    echo "   repos:       Enable PPAs"
+    echo "   install:     Install Pipewire"
+    echo "   pipewire:    Use Pipewire"
+    echo "   pulseaudio:  Use PuleAudio"
+    echo "   restart:     Restart audio service"
+    echo "   check:       Check sound"
+    echo "   services:    Show services status"
 }
 
 # shellcheck disable=SC2120
 function cmd_services() {
-	echo -e "${GREEN}●${RESET} Sockets:"
-	unbuffer systemctl --user list-sockets --no-pager $1 "*wire*" "*pulse*" | sed -e '/^$/,$d'
-	echo
-	echo -e "${GREEN}●${RESET} Services:"
-	unbuffer systemctl --user list-units --no-pager --type=service "$1" "*wire*" "*pulse*" | sed -e '/^$/,$d'
+    echo -e "${GREEN}●${RESET} Sockets:"
+    unbuffer systemctl --user list-sockets --no-pager $1 "*wire*" "*pulse*" | sed -e '/^$/,$d'
+    echo
+    echo -e "${GREEN}●${RESET} Services:"
+    unbuffer systemctl --user list-units --no-pager --type=service "$1" "*wire*" "*pulse*" | sed -e '/^$/,$d'
 }
 
 ### Run the command
@@ -187,9 +187,8 @@ command=${1-help}
 shift || true
 func=cmd_"${command}"
 if [ "$(type -t "$func")" == "function" ]; then
-	$func "$@"
+    $func "$@"
 else
-	printf "Unknown command %s\n" "$command"
-	cmd_help
+    printf "Unknown command %s\n" "$command"
+    cmd_help
 fi
-
